@@ -27,7 +27,7 @@ preferences {
     //startPage
     page(name: "pageMain")
         
-    page(name:"pageSettings")
+    page(name:"pageBeddiSettings")
     
     
     }
@@ -42,7 +42,7 @@ preferences {
         }
       
       section("Options") {
-			href "pageSettings", title: "Settings", description: "Tap to configure app settings, get setup information or to reset the access token",
+			href "pageBeddiSettings", title: "Beddi Settings", description: "Tap to get Beddi HTTP settings or to reset the access token",
             	image: ""
 		href "pageAbout", title: "About ${textAppName()}", description: "Tap to get version information, license, instructions or to remove the application",
             	image: ""
@@ -57,8 +57,8 @@ def installed() {}
 def updated() {}
 
 
-def pageSettings(){
-    dynamicPage(name: "pageSettings", title: none, uninstall: false){
+def pageBeddiSettings(){
+    dynamicPage(name: "pageBeddiSettings", title: none, uninstall: false){
         section { paragraph "Settings" }	
         section ("Other Values/Variables"){
 
@@ -69,7 +69,7 @@ def pageSettings(){
       }	
         section ("Advanced") { 
             href "pageConfirmation", title: "Revoke/Reset Access Token", description: "Tap to confirm this action",
-            	image: "https://raw.githubusercontent.com/MichaelStruck/SmartThingsPublic/master/img/warning.png"
+            	image: ""
         }
     }
 }
@@ -92,7 +92,7 @@ def pageAbout(){
 mappings {
     // The path is appended to the endpoint to make requests
     path("/setup") { action: [GET: "displayData"] }
-    path("/switchOne/:command"){
+    path("/switch/:switchName/:command"){
     	action: [
         	PUT: "switchOneCommand"
         ]
@@ -118,7 +118,7 @@ void switchOneCommand() {
     switchCommand(switch1, command)
 }
 
-void switchCommand(theSwitch,command) {
+void switchCommand() {
     // use the built-in request object to get the command parameter
     //def command = params.command
 
@@ -184,23 +184,24 @@ private show(devices, type) {
 def setupData(){
 	log.info "Set up web page located at : ${getApiServerUrl()}/api/smartapps/installations/${app.id}/setup?access_token=${state.accessToken}"
 	def result = """
+    <b> Use PUT as http reqeust type!</b>
     				<br><hr><br>
                     <i><b>Switch 1</b></i>
                     <br><br>
-                    ${getApiServerUrl()}/api/smartapps/installations/${app.id}/toggle/switchOne/toggle?access_token=${state.accessToken}
+                    ${getApiServerUrl()}/api/smartapps/installations/${app.id}/switchOne/toggle?access_token=${state.accessToken}
                     <br><br><hr></div>
                     
-                    <br><hr><br>
-                    <i><b>Switch 1</b></i>
+                    <i><b>Switch 2</b></i>
                     <br><br>
-                    ${getApiServerUrl()}/api/smartapps/installations/${app.id}/toggle/switchTwo/toggle?access_token=${state.accessToken}
+                    ${getApiServerUrl()}/api/smartapps/installations/${app.id}/switchTwo/toggle?access_token=${state.accessToken}
                     <br><br><hr></div>
    
-   					<br><hr><br>
-                    <i><b>Switch 1</b></i>
+                    <i><b>Switch 3</b></i>
                     <br><br>
-                    ${getApiServerUrl()}/api/smartapps/installations/${app.id}/toggle/switchThree/toggle?access_token=${state.accessToken}
+                    ${getApiServerUrl()}/api/smartapps/installations/${app.id}/switchThree/toggle?access_token=${state.accessToken}
                     <br><br><hr></div>
+                    
+                    
                  """
 }
 
