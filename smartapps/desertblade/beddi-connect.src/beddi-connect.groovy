@@ -92,7 +92,7 @@ def pageAbout(){
 mappings {
     // The path is appended to the endpoint to make requests
     path("/setup") { action: [GET: "displayData"] }
-    path("/switch/:switchName/:command"){
+    path("/switchOne/:command"){
     	action: [
         	PUT: "switchOneCommand"
         ]
@@ -116,6 +116,16 @@ mappings {
 void switchOneCommand() {
     def command = params.command
     switchCommand(switch1, command)
+}
+
+void switchTwoCommand() {
+    def command = params.command
+    switchCommand(switch2, command)
+}
+
+void switchThreeCommand() {
+    def command = params.command
+    switchCommand(switch3, command)
 }
 
 void switchCommand() {
@@ -167,18 +177,6 @@ def listSwitches() {
 private device(it, type) {
 	it ? [id: it.id, label: it.label, type: type, currentState: it.currentState("${type}").value] : null
     //it ? [it.currentState("${type}")] : null
-}
-
-private show(devices, type) {
-	def device = devices.find { it.id == params.id }
-	if (!device) {
-		httpError(404, "Device not found")
-	}
-	else {
-		def attributeName = type == "motionSensor" ? "motion" : type
-		def s = device.currentState(attributeName)
-		[id: device.id, label: device.displayName, value: s?.value, unitTime: s?.date?.time, type: type]
-	}
 }
 
 def setupData(){
