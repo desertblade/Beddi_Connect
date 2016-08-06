@@ -115,6 +115,7 @@ mappings {
 
 void switchOneCommand() {
     def command = params.command
+    log.debug "--here"
     switchCommand(switch1, command)
 }
 
@@ -128,7 +129,7 @@ void switchThreeCommand() {
     switchCommand(switch3, command)
 }
 
-void switchCommand() {
+void switchCommand(theSwitch,command) {
     // use the built-in request object to get the command parameter
     //def command = params.command
 
