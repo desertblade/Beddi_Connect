@@ -115,7 +115,6 @@ mappings {
 
 void switchOneCommand() {
     def command = params.command
-    log.debug "--here"
     switchCommand(switch1, command)
 }
 
@@ -143,7 +142,6 @@ void switchCommand(theSwitch,command) {
         case "off":
             theSwitch.off()
         case "toggle":
-        theSwitch.on()
         	if (theSwitch.currentValue("switch") == "off") {
             	theSwitch.on()
             } else {
