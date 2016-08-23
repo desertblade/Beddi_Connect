@@ -1,5 +1,5 @@
 /**
- *  Example: Control a switch with a contact sensor
+ *  Beddi Connect
  *
  *  Copyright 2015 SmartThings
  *
@@ -39,13 +39,12 @@ preferences {
         input "switch1", "capability.switch", title: "Switch 1", multiple: false, required: false
         input "switch2", "capability.switch", title: "Switch 2", multiple: false, required: false
         input "switch3", "capability.switch", title: "Switch 3", multiple: false, required: false
+        input "switch4", "capability.switch", title: "Switch 4", multiple: true, required: false
         }
       
       section("Options") {
-			href "pageBeddiSettings", title: "Beddi Settings", description: "Tap to get Beddi HTTP settings or to reset the access token",
-            	image: ""
-		href "pageAbout", title: "About ${textAppName()}", description: "Tap to get version information, license, instructions or to remove the application",
-            	image: ""
+			href ("pageBeddiSettings", title: "Beddi Settings", description: "Tap to get Beddi HTTP settings or to reset the access token",image: "")
+        	label(title: "Label this SmartApp", required: false, defaultValue: "")
         }
 
 	}
@@ -74,18 +73,6 @@ def pageBeddiSettings(){
     }
 }
 
-def pageAbout(){
-	dynamicPage(name: "pageAbout", uninstall: true) {
-        section {paragraph "${textAppName()}\n${textCopyright()}",
-            	image: ""}
-        section ("Version numbers") { paragraph "${textVersion()}" } 
-        section ("Access token / Application ID"){
-            if (!state.accessToken) OAuthToken()
-            def msg = state.accessToken != null ? state.accessToken : "Could not create Access Token. OAuth may not be enabled. Go to the SmartApp IDE settings to enable OAuth."
-            paragraph "Access token:\n${msg}\n\nApplication ID:\n${app.id}"
-    	}
-	}
-}
 
 // This block defines an endpoint, and which functions will fire depending on which type
 // of HTTP request you send
@@ -103,11 +90,22 @@ mappings {
         	PUT: "switchTwoCommand"
         ]
     
-    }
-    
+    }    
         path("/switchThree/:command"){
     	action: [
         	PUT: "switchThreeCommand"
+        ]
+    
+    }
+    path("/switchFour/:command"){
+    	action: [
+        	PUT: "switchFourCommand"
+        ]
+    
+    }
+      path("/switchTwoThree/:command"){
+    	action: [
+        	PUT: "switchTwoThreeCommand"
         ]
     
     }
@@ -123,9 +121,20 @@ void switchTwoCommand() {
     switchCommand(switch2, command)
 }
 
+void switchTwoThreeCommand() {
+    def command = params.command
+    switchCommand(switch2, command)
+    switchCommand(switch3, command)
+}
+
 void switchThreeCommand() {
     def command = params.command
     switchCommand(switch3, command)
+}
+
+void switchFourCommand() {
+    def command = params.command
+    switchCommand(switch4, command)
 }
 
 void switchCommand(theSwitch,command) {
@@ -147,6 +156,9 @@ void switchCommand(theSwitch,command) {
             } else {
             	theSwitch.off()
              }
+             break
+       	case "set":
+           		theSwitch.setLevel(50)
           break
         default:
             httpError(400, "$command is not a valid command for all switches specified")
@@ -181,7 +193,8 @@ private device(it, type) {
 def setupData(){
 	log.info "Set up web page located at : ${getApiServerUrl()}/api/smartapps/installations/${app.id}/setup?access_token=${state.accessToken}"
 	def result = """
-    <b> Use PUT as http reqeust type!</b>
+    <b> Use PUT as http reqeust type!</b> </br>
+     <b>You can change "toggle" to On/Off/Set</b>
     				<br><hr><br>
                     <i><b>Switch 1</b></i>
                     <br><br>
@@ -196,6 +209,11 @@ def setupData(){
                     <i><b>Switch 3</b></i>
                     <br><br>
                     ${getApiServerUrl()}/api/smartapps/installations/${app.id}/switchThree/toggle?access_token=${state.accessToken}
+                    <br><br><hr></div>
+                    
+                    <i><b>Switch 4 -- Multiple switches</b></i>
+                    <br><b>Off</b><br>
+                    ${getApiServerUrl()}/api/smartapps/installations/${app.id}/switchFour/off?access_token=${state.accessToken}
                     <br><br><hr></div>
                     
                     
